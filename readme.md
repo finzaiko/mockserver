@@ -1,3 +1,3 @@
 # MOCKSERVER
 
-https://www.npmjs.com/package/got
+Custom local development test proxy server for mock data

@@ -1,11 +1,25 @@
 "use strict";
 
 const reqmaker = require("./reqmaker");
+const got = require("got");
 const fastify = require("fastify")({ logger: false });
 fastify.register(require("@fastify/cors"), { origin: "*" });
 
 fastify.get("/", function (req, reply) {
   reply.send({ hello: "world" });
+});
+
+// Try using got
+fastify.get("/test", async (req, reply) => {
+  const response = await got("https://random-data-api.com/api/v2/users");
+  const res = {
+    status: 200,
+    message: "Get all random user",
+    error: false,
+    data: JSON.parse(response.body),
+  };
+
+  reply.code(res.status).send(res);
 });
 
 fastify.get("/api/:path", async (req, reply) => {
