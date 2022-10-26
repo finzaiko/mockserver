@@ -1,3 +1,6 @@
 # MOCKSERVER
 
-Custom local development test proxy server for mock data
+#### Run PM2
+```
+pm2 start npm --name "mockserver" -- start
+```

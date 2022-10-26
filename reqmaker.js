@@ -1,6 +1,7 @@
 const axios = require("axios");
 
 module.exports = ({ url, method, data = "", headers = {} }) => {
+  // console.log(`Hello, logging ${str}!`);
   return new Promise((resolve, reject) => {
     axios({
       url: url,
@@ -9,6 +10,7 @@ module.exports = ({ url, method, data = "", headers = {} }) => {
       data: data,
     })
       .then((response) => {
+        // console.log(response.status);
         resolve(response.data);
       })
       .catch((error) => {

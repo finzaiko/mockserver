@@ -1,25 +1,15 @@
 "use strict";
 
 const reqmaker = require("./reqmaker");
-const got = require("got");
+const env = require('node:process');
 const fastify = require("fastify")({ logger: false });
 fastify.register(require("@fastify/cors"), { origin: "*" });
 
+
+console.log("SERVER_URL= ", env.env.SERVER_URL);
+
 fastify.get("/", function (req, reply) {
   reply.send({ hello: "world" });
-});
-
-// Try using got
-fastify.get("/test", async (req, reply) => {
-  const response = await got("https://random-data-api.com/api/v2/users");
-  const res = {
-    status: 200,
-    message: "Get all random user",
-    error: false,
-    data: JSON.parse(response.body),
-  };
-
-  reply.code(res.status).send(res);
 });
 
 fastify.get("/api/:path", async (req, reply) => {
@@ -33,7 +23,7 @@ fastify.get("/api/:path", async (req, reply) => {
   let data;
   try {
     data = await reqmaker({
-      url: `https://jsonplaceholder.typicode.com/${req.params.path}?_start=${start}&_limit=${limit}`,
+      url: `${env.env.SERVER_URL}/${req.params.path}?_start=${start}&_limit=${limit}`,
       method: "GET",
     });
   } catch (ex) {
