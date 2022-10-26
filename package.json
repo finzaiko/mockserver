@@ -5,8 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "concurrently \"npm run proxyserver\" \"npm run mainserver\"",
-    "proxyserver": "json-server --watch db.json --port 3001",
-    "mainserver": "SERVER_URL=\"http://localhost:3001\" ./node_modules/nodemon/bin/nodemon.js ./index.js",
+    "proxyserver": "json-server --watch db.json --port 7081",
+    "mainserver": "SERVER_IP=\"http://localhost\" SERVER_PORT=7080 SERVER_URL=\"http://localhost:7081\" ./node_modules/nodemon/bin/nodemon.js ./index.js",
     "liveserver": "SERVER_URL=\"https://jsonplaceholder.typicode.com\" ./node_modules/nodemon/bin/nodemon.js ./index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

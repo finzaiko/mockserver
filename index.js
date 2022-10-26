@@ -1,15 +1,22 @@
 "use strict";
 
 const reqmaker = require("./reqmaker");
-const env = require('node:process');
+const env = require("node:process");
 const fastify = require("fastify")({ logger: false });
 fastify.register(require("@fastify/cors"), { origin: "*" });
-
 
 console.log("SERVER_URL= ", env.env.SERVER_URL);
 
 fastify.get("/", function (req, reply) {
-  reply.send({ hello: "world" });
+  reply.send({
+    hello: "world",
+    photos: `${env.env.SERVER_IP}:${env.env.SERVER_PORT}/api/posts`,
+    comments: `${env.env.SERVER_IP}:${env.env.SERVER_PORT}/api/comments`,
+    albums: `${env.env.SERVER_IP}:${env.env.SERVER_PORT}/api/albums`,
+    photos: `${env.env.SERVER_IP}:${env.env.SERVER_PORT}/api/photos`,
+    todos: `${env.env.SERVER_IP}:${env.env.SERVER_PORT}/api/todos`,
+    users: `${env.env.SERVER_IP}:${env.env.SERVER_PORT}/api/users`,
+  });
 });
 
 fastify.get("/api/:path", async (req, reply) => {
@@ -43,7 +50,7 @@ fastify.get("/api/:path/:id", async (req, reply) => {
   let data;
   try {
     data = await reqmaker({
-      url: `https://jsonplaceholder.typicode.com/${req.params.path}/${req.params.id}`,
+      url: `${env.env.SERVER_URL}/${req.params.path}/${req.params.id}`,
       method: "GET",
     });
   } catch (ex) {
@@ -64,7 +71,7 @@ fastify.post("/api/:path", async (req, reply) => {
   console.log("LOG: ", req.body);
   try {
     data = await reqmaker({
-      url: `https://jsonplaceholder.typicode.com/${req.params.path}`,
+      url: `${env.env.SERVER_URL}/${req.params.path}`,
       method: "POST",
       data: req.body,
     });
@@ -84,7 +91,7 @@ fastify.put("/api/:path/:id", async (req, reply) => {
   let data;
   try {
     data = await reqmaker({
-      url: `https://jsonplaceholder.typicode.com/${req.params.path}`,
+      url: `${env.env.SERVER_URL}/${req.params.path}`,
       method: "POST",
       data: req.body,
     });
@@ -104,7 +111,7 @@ fastify.delete("/api/:path/:id", async (req, reply) => {
   let data;
   try {
     data = await reqmaker({
-      url: `https://jsonplaceholder.typicode.com/${req.params.path}/${req.params.id}`,
+      url: `${env.env.SERVER_URL}/${req.params.path}/${req.params.id}`,
       method: "DELETE",
       data: req.body,
     });
@@ -120,9 +127,12 @@ fastify.delete("/api/:path/:id", async (req, reply) => {
   reply.code(res.status).send(res);
 });
 
-fastify.listen({ port: 3000, host: "0.0.0.0" }, (err, address) => {
-  if (err) {
-    fastify.log.error(err);
-    process.exit(1);
+fastify.listen(
+  { port: env.env.SERVER_PORT || 3000, host: "0.0.0.0" },
+  (err, address) => {
+    if (err) {
+      fastify.log.error(err);
+      process.exit(1);
+    }
   }
-});
+);
