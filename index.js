@@ -2,6 +2,7 @@
 
 const reqmaker = require("./reqmaker");
 const env = require("node:process");
+const got = require("got");
 const fastify = require("fastify")({ logger: false });
 fastify.register(require("@fastify/cors"), { origin: "*" });
 
@@ -10,7 +11,7 @@ console.log("SERVER_URL= ", env.env.SERVER_URL);
 fastify.get("/", function (req, reply) {
   reply.send({
     hello: "world",
-    photos: `${env.env.SERVER_IP}:${env.env.SERVER_PORT}/api/posts`,
+    posts: `${env.env.SERVER_IP}:${env.env.SERVER_PORT}/api/posts`,
     comments: `${env.env.SERVER_IP}:${env.env.SERVER_PORT}/api/comments`,
     albums: `${env.env.SERVER_IP}:${env.env.SERVER_PORT}/api/albums`,
     photos: `${env.env.SERVER_IP}:${env.env.SERVER_PORT}/api/photos`,
@@ -29,10 +30,11 @@ fastify.get("/api/:path", async (req, reply) => {
   }
   let data;
   try {
-    data = await reqmaker({
-      url: `${env.env.SERVER_URL}/${req.params.path}?_start=${start}&_limit=${limit}`,
-      method: "GET",
-    });
+    data = await got
+      .get(
+        `${env.env.SERVER_URL}/${req.params.path}?_start=${start}&_limit=${limit}`
+      )
+      .json();
   } catch (ex) {
     return reply.code(400).send(ex);
   }
@@ -49,10 +51,9 @@ fastify.get("/api/:path", async (req, reply) => {
 fastify.get("/api/:path/:id", async (req, reply) => {
   let data;
   try {
-    data = await reqmaker({
-      url: `${env.env.SERVER_URL}/${req.params.path}/${req.params.id}`,
-      method: "GET",
-    });
+    data = await got
+      .get(`${env.env.SERVER_URL}/${req.params.path}/${req.params.id}`)
+      .json();
   } catch (ex) {
     return reply.code(400).send(ex);
   }
@@ -70,11 +71,9 @@ fastify.post("/api/:path", async (req, reply) => {
   let data;
   console.log("LOG: ", req.body);
   try {
-    data = await reqmaker({
-      url: `${env.env.SERVER_URL}/${req.params.path}`,
-      method: "POST",
-      data: req.body,
-    });
+    data = await got
+      .post(`${env.env.SERVER_URL}/${req.params.path}`, req.body)
+      .json();
   } catch (ex) {
     return reply.code(400).send(ex);
   }
@@ -90,11 +89,9 @@ fastify.post("/api/:path", async (req, reply) => {
 fastify.put("/api/:path/:id", async (req, reply) => {
   let data;
   try {
-    data = await reqmaker({
-      url: `${env.env.SERVER_URL}/${req.params.path}`,
-      method: "POST",
-      data: req.body,
-    });
+    data = await got
+      .put(`${env.env.SERVER_URL}/${req.params.path}/${req.params.id}`, req.body)
+      .json();
   } catch (ex) {
     return reply.code(400).send(ex);
   }
@@ -110,11 +107,9 @@ fastify.put("/api/:path/:id", async (req, reply) => {
 fastify.delete("/api/:path/:id", async (req, reply) => {
   let data;
   try {
-    data = await reqmaker({
-      url: `${env.env.SERVER_URL}/${req.params.path}/${req.params.id}`,
-      method: "DELETE",
-      data: req.body,
-    });
+    data = await got
+      .delete(`${env.env.SERVER_URL}/${req.params.path}/${req.params.id}`)
+      .json();
   } catch (ex) {
     return reply.code(400).send(ex);
   }

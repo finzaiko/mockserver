@@ -27,3 +27,10 @@ module.exports = ({ url, method, data = "", headers = {} }) => {
       });
   });
 };
+
+/*
+data = await reqmaker({
+  url: `${env.env.SERVER_URL}/${req.params.path}?_start=${start}&_limit=${limit}`,
+  method: "GET",
+});
+*/
