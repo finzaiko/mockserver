@@ -8,6 +8,16 @@ fastify.register(require("@fastify/cors"), { origin: "*" });
 
 console.log("SERVER_URL= ", env.env.SERVER_URL);
 
+// base on path count: https://jsonplaceholder.typicode.com/
+const totalCount = {
+  posts: 100,
+  comments: 500,
+  albums: 100,
+  photos: 5000,
+  todos: 200,
+  users: 10,
+};
+
 fastify.get("/", function (req, reply) {
   reply.send({
     hello: "world",
@@ -43,6 +53,8 @@ fastify.get("/api/:path", async (req, reply) => {
     message: "Get all data",
     error: false,
     data: data,
+    pos: parseInt(start),
+    total_count: totalCount[req.params.path],
   };
 
   reply.code(res.status).send(res);
@@ -90,7 +102,10 @@ fastify.put("/api/:path/:id", async (req, reply) => {
   let data;
   try {
     data = await got
-      .put(`${env.env.SERVER_URL}/${req.params.path}/${req.params.id}`, req.body)
+      .put(
+        `${env.env.SERVER_URL}/${req.params.path}/${req.params.id}`,
+        req.body
+      )
       .json();
   } catch (ex) {
     return reply.code(400).send(ex);
