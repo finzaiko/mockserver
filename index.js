@@ -22,6 +22,8 @@ fastify.get("/", function (req, reply) {
   reply.send({
     hello: "world",
     posts: `${env.env.SERVER_IP}:${env.env.SERVER_PORT}/api/posts`,
+    posts_paging1: `${env.env.SERVER_IP}:${env.env.SERVER_PORT}/api/posts?page=1`,
+    posts_paging2: `${env.env.SERVER_IP}:${env.env.SERVER_PORT}/api/posts?start=0&limit=2`,
     comments: `${env.env.SERVER_IP}:${env.env.SERVER_PORT}/api/comments`,
     albums: `${env.env.SERVER_IP}:${env.env.SERVER_PORT}/api/albums`,
     photos: `${env.env.SERVER_IP}:${env.env.SERVER_PORT}/api/photos`,
@@ -38,6 +40,17 @@ fastify.get("/api/:path", async (req, reply) => {
   if (!limit) {
     limit = 20;
   }
+
+  let currentPage = 1;
+
+  if (typeof req.query.page !== "undefined") {
+    currentPage = parseInt(req.query.page);
+  }
+
+  if (currentPage > 1) {
+    start = (currentPage - 1) * limit;
+  }
+
   let data;
   try {
     data = await got
